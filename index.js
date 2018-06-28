@@ -1,6 +1,6 @@
-module.exports = createCancellableContext;
+module.exports = createCancelTree;
 
-function createCancellableContext() {
+function createCancelTree() {
     let cancelled = false, cancel = [], children = [];
 
     return {
@@ -26,7 +26,7 @@ function createCancellableContext() {
         },
         beget() {
             _assertNotCancelled();
-            const newContext = createCancellableContext();
+            const newContext = createCancelTree();
             children.push(newContext);
             return newContext;
         },
