@@ -1,6 +1,13 @@
 module.exports = createCancelTree;
 
-function createCancelTree() {
+function createCancelTree(opts) {
+    opts = opts || {};
+    if (!('logger' in opts)) {
+        opts.logger = console;
+    }
+
+    const {logger} = opts;
+
     let cancelled = false, cancel = [], children = [];
 
     return {
@@ -14,7 +21,8 @@ function createCancelTree() {
                     try {
                         fn();
                     } catch (err) {
-                        console.error("Caught error while processing cancellation");
+                        logger.error("Caught error while processing cancellation");
+                        logger.error(err);
                     }
                 });
                 cancel = children = null;
@@ -26,7 +34,7 @@ function createCancelTree() {
         },
         beget() {
             _assertNotCancelled();
-            const newContext = createCancelTree();
+            const newContext = createCancelTree(opts);
             children.push(newContext);
             return newContext;
         },
